@@ -61,6 +61,8 @@ public class WebCrawler {
             System.out.println(l);
         }
 
+        System.out.println("Found " + uniqueLinks.size() + " files");
+
     }
 
     public void addRule(LinkFinderRule rule) {
