@@ -2,6 +2,7 @@ package uk.co.foxbeck.webcrawler;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class WebCrawler {
@@ -16,7 +17,9 @@ public class WebCrawler {
     }
 
     public List<Link> crawl() {
-        return null;
+        List<Link> links = new ArrayList<>();
+
+        return links;
 
     }
 }

@@ -37,5 +37,6 @@ public class WebCrawlerTest {
         WebCrawler webCrawler = new WebCrawler(SEED_URL);
         List<Link> links = webCrawler.crawl();
         assertThat(links, notNullValue());
+        assertThat(links.size(), greaterThan(0));
     }
 }
