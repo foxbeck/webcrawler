@@ -32,19 +32,17 @@ public class HtmlLinkFinderRule implements LinkFinderRule {
 
         Link link = Link.createVisitableLink(urlString);
         if (link != null) {
-            String host = link.getUrl().getHost();
-            if (host != null && !host.isEmpty()) {
-                if (host.endsWith(domain)) {
-                    links.add(link);
-                }
-                else {
-                    links.add(Link.createUnvisitableLink(urlString));
-                }
+            if (isExternalDomain(link)) {
+                link = Link.createUnvisitableLink(urlString);
             }
-            else {
-                links.add(link);
-            }
+            links.add(link);
         }
+
+    }
+
+    private boolean isExternalDomain(Link link) {
+        String host = link.getUrl().getHost();
+        return host != null && !host.isEmpty() && !host.endsWith(domain);
 
     }
 }

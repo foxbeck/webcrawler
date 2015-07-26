@@ -76,4 +76,15 @@ public class WebCrawlerTest {
         assertThat(links, notNullValue());
         assertThat(links.size(), equalTo(16));
     }
+
+    @Test
+    public void testCrawlWithAllRules() throws Exception {
+        WebCrawler webCrawler = new WebCrawler(SEED_URL);
+        webCrawler.addRule(new ImageFinderRule());
+        webCrawler.addRule(new ScriptFinderRule());
+        webCrawler.addRule(new HtmlLinkFinderRule(DOMAIN));
+        List<Link> links = webCrawler.crawl();
+        assertThat(links, notNullValue());
+        assertThat(links.size(), equalTo(17));
+    }
 }

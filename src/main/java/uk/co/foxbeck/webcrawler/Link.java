@@ -52,9 +52,7 @@ public class Link {
 
     @Override
     public String toString() {
-        String ret = visitable ? "+ " : "- ";
-        ret += url.getProtocol() + "://" + url.getHost() + url.getPath();
-        return ret;
+        return url.getProtocol() + "://" + url.getHost() + url.getPath();
     }
 
     @Override

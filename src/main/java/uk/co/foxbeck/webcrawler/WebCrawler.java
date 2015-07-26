@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class WebCrawler {
@@ -25,8 +27,17 @@ public class WebCrawler {
         }
     }
 
-    public List<Link> crawl() {
+    private void setupDefaultRulesIfNoneSetAlready() {
+        if (rules.isEmpty()) {
+            addRule(new ImageFinderRule());
+            addRule(new ScriptFinderRule());
+            addRule(new HtmlLinkFinderRule(seedUrl.getHost()));
+        }
 
+    }
+
+    public List<Link> crawl() {
+        setupDefaultRulesIfNoneSetAlready();
 
         Link seedLink = Link.createVisitableLink(seedUrl);
         rememberLink(seedLink);
@@ -34,6 +45,21 @@ public class WebCrawler {
         findNewLinks(seedLink);
 
         return uniqueLinks;
+
+    }
+
+    public void print() {
+        Collections.sort(uniqueLinks, new Comparator<Link>() {
+            @Override
+            public int compare(Link o1, Link o2) {
+                return o1.toString().compareTo(o2.toString());
+            }
+        });
+
+        System.out.println();
+        for (Link l : uniqueLinks) {
+            System.out.println(l);
+        }
 
     }
 
