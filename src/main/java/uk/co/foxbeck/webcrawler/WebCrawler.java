@@ -27,46 +27,66 @@ public class WebCrawler {
         }
     }
 
-    private void setupDefaultRulesIfNoneSetAlready() {
-        if (rules.isEmpty()) {
-            addRule(new ImageFinderRule());
-            addRule(new ScriptFinderRule());
-            addRule(new HtmlLinkFinderRule(seedUrl.getHost()));
-        }
-
-    }
-
     public List<Link> crawl() {
         setupDefaultRulesIfNoneSetAlready();
 
         Link seedLink = Link.createVisitableLink(seedUrl);
         rememberLink(seedLink);
 
-        findNewLinks(seedLink);
+        findAndVisitNewLinks(seedLink);
 
         return uniqueLinks;
-
     }
 
-    public void print() {
-        Collections.sort(uniqueLinks, new Comparator<Link>() {
-            @Override
-            public int compare(Link o1, Link o2) {
-                return o1.toString().compareTo(o2.toString());
-            }
-        });
+    private void setupDefaultRulesIfNoneSetAlready() {
+        if (rules.isEmpty()) {
+            addRule(new ImageFinderRule());
+            addRule(new ScriptFinderRule());
+            addRule(new HtmlLinkFinderRule(seedUrl.getHost()));
+        }
+    }
 
-        System.out.println();
-        for (Link l : uniqueLinks) {
-            System.out.println(l);
+    private void findAndVisitNewLinks(Link linkNode) {
+        Document document = tryToOpenDocument(linkNode);
+        if (document != null) {
+
+            List<Link> links = findAllLinksInDocument(document);
+
+            List<Link> linksToVisit = rememberNewLinksAndReturnVisitableOnes(links);
+            findAndVisitNewLinks(linksToVisit);
+        }
+    }
+
+    private void findAndVisitNewLinks(List<Link> list) {
+        for (Link link : list) {
+            findAndVisitNewLinks(link);
+        }
+    }
+
+    private List<Link> rememberNewLinksAndReturnVisitableOnes(List<Link> links) {
+        List<Link> linksToVisit = new ArrayList<>();
+
+        for (Link link : links) {
+            if (isNewLink(link)) {
+                rememberLink(link);
+                if (link.isVisitable()) {
+                    linksToVisit.add(link);
+                }
+            }
         }
 
-        System.out.println("Found " + uniqueLinks.size() + " files");
-
+        return linksToVisit;
     }
 
-    public void addRule(LinkFinderRule rule) {
-        rules.add(rule);
+
+    private Document tryToOpenDocument(Link link) {
+        try {
+            Connection connection = Jsoup.connect(link.getUrl().toExternalForm());
+            return connection.get();
+        } catch (IOException e) {
+            return null;
+        }
+
     }
 
 
@@ -80,53 +100,39 @@ public class WebCrawler {
         return links;
     }
 
-    private void findNewLinks(Link linkNode) {
-        Document document = openDocument(linkNode);
-        if (document != null) {
-            List<Link> links = findAllLinksInDocument(document);
-
-            List<Link> linksToVisit = new ArrayList<>();
-
-            for (Link link : links) {
-                if (isNewLink(link)) {
-                    rememberLink(link);
-                    if (link.isVisitable()) {
-                        linksToVisit.add(link);
-                    }
-                }
-            }
-
-            for (Link link : linksToVisit) {
-                findNewLinks(link);
-            }
-
-        }
+    public void print() {
+        sortLinksAlphabetically();
+        printLinks();
     }
 
-
-    private Document openDocument(Link link) {
-        try {
-            Connection connection = Jsoup.connect(link.getUrl().toExternalForm());
-            return connection.get();
-        } catch (IOException e) {
-            return null;
+    private void printLinks() {
+        System.out.println();
+        for (Link l : uniqueLinks) {
+            System.out.println(l);
         }
 
+        System.out.println("Found " + uniqueLinks.size() + " files");
     }
 
+    public void addRule(LinkFinderRule rule) {
+        rules.add(rule);
+    }
 
     private void rememberLink(Link link) {
         uniqueLinks.add(link);
         System.out.print(".");
     }
 
-
     private boolean isNewLink(Link link) {
-        boolean isNew = !uniqueLinks.contains(link);
-
-
-        return isNew;
+        return !uniqueLinks.contains(link);
     }
 
-
+    private void sortLinksAlphabetically() {
+        Collections.sort(uniqueLinks, new Comparator<Link>() {
+            @Override
+            public int compare(Link o1, Link o2) {
+                return o1.toString().compareTo(o2.toString());
+            }
+        });
+    }
 }
