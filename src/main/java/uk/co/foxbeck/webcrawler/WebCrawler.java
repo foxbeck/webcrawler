@@ -2,6 +2,7 @@ package uk.co.foxbeck.webcrawler;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 public class WebCrawler {
 
@@ -12,6 +13,10 @@ public class WebCrawler {
         } catch (MalformedURLException e) {
            throw new WebCrawlerException("'" + seedUrlString + "' is not a valid URL.");
         }
+    }
+
+    public List<Link> crawl() {
+        return null;
 
     }
 }
