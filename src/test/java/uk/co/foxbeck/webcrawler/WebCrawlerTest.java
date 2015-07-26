@@ -10,7 +10,8 @@ import static org.hamcrest.Matchers.*;
 
 public class WebCrawlerTest {
 
-    private static final String SEED_URL = "http://jhy.io";
+    private static final String DOMAIN = "jhy.io";
+    private static final String SEED_URL = "http://" + DOMAIN;
 
     @Test
     public void testConstructor() throws Exception {
@@ -41,11 +42,38 @@ public class WebCrawlerTest {
     }
 
     @Test
-    public void testCrawlWithRule() throws Exception {
+    public void testCrawlWithTestRule() throws Exception {
         WebCrawler webCrawler = new WebCrawler(SEED_URL);
         webCrawler.addRule(new TestLinkFinderRule());
         List<Link> links = webCrawler.crawl();
         assertThat(links, notNullValue());
         assertThat(links.size(), equalTo(6));
+    }
+
+    @Test
+    public void testCrawlWithImageRule() throws Exception {
+        WebCrawler webCrawler = new WebCrawler(SEED_URL);
+        webCrawler.addRule(new ImageFinderRule());
+        List<Link> links = webCrawler.crawl();
+        assertThat(links, notNullValue());
+        assertThat(links.size(), equalTo(2));
+    }
+
+    @Test
+    public void testCrawlWithScriptRule() throws Exception {
+        WebCrawler webCrawler = new WebCrawler(SEED_URL);
+        webCrawler.addRule(new ScriptFinderRule());
+        List<Link> links = webCrawler.crawl();
+        assertThat(links, notNullValue());
+        assertThat(links.size(), equalTo(1));
+    }
+
+    @Test
+    public void testCrawlWithHtmlRule() throws Exception {
+        WebCrawler webCrawler = new WebCrawler(SEED_URL);
+        webCrawler.addRule(new HtmlLinkFinderRule(DOMAIN));
+        List<Link> links = webCrawler.crawl();
+        assertThat(links, notNullValue());
+        assertThat(links.size(), equalTo(16));
     }
 }
