@@ -3,6 +3,7 @@ package uk.co.foxbeck.webcrawler;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
 
 public class WebCrawlerTest {
 
@@ -11,6 +12,20 @@ public class WebCrawlerTest {
     @Test
     public void testConstructor() throws Exception {
         WebCrawler webCrawler = new WebCrawler(SEED_URL);
+    }
 
+    @Test(expected=WebCrawlerException.class)
+    public void testBadUrl() throws Exception {
+        WebCrawler webCrawler = new WebCrawler("bad url");
+    }
+
+    @Test(expected=WebCrawlerException.class)
+    public void testEmptyUrl() throws Exception {
+        WebCrawler webCrawler = new WebCrawler("");
+    }
+
+    @Test(expected=WebCrawlerException.class)
+    public void testNullUrl() throws Exception {
+        WebCrawler webCrawler = new WebCrawler(null);
     }
 }
